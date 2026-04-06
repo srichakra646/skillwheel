@@ -1,0 +1,29 @@
+/* ═══════════════════════════════════════════════════
+   animations.css
+   Pure @keyframes and the classes that apply them.
+   No layout, no colour — those live in their own files.
+═══════════════════════════════════════════════════ */
+
+/* ── loading bar fill ── */
+@keyframes ldgo {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+/* ── root node pulsing glow ── */
+@keyframes pulseGlow {
+  0%,  100% { filter: drop-shadow(0 0 5px var(--accent)); }
+  50%        {
+    filter:
+      drop-shadow(0 0 16px var(--accent))
+      drop-shadow(0 0 30px rgba(0, 212, 255, 0.2));
+  }
+}
+.root-pulse { animation: pulseGlow 3.5s ease-in-out infinite; }
+
+/* ── dashed orbit ring slow rotation ── */
+@keyframes rotateDash {
+  from { stroke-dashoffset: 0;    }
+  to   { stroke-dashoffset: -120; }
+}
+.ring-rotate { animation: rotateDash 18s linear infinite; }

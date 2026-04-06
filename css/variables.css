@@ -1,0 +1,40 @@
+/* ═══════════════════════════════════════════════════
+   variables.css
+   Design tokens — all colour, spacing and font values
+   live here. Change theme in one place, affects all.
+═══════════════════════════════════════════════════ */
+
+:root {
+  /* ── dark theme (default) ── */
+  --bg:       #070b12;
+  --panel:    #0d1520;
+  --border:   #162236;
+  --text:     #b8cce0;
+  --text-dim: #3a5a7a;
+  --accent:   #00d4ff;   /* cyan  — primary highlights   */
+  --accent2:  #00ff88;   /* green — leaf nodes / open    */
+  --accent3:  #ff6b35;   /* orange — dork badges         */
+  --glow:     rgba(0, 212, 255, 0.35);
+  --glow2:    rgba(0, 255, 136, 0.25);
+
+  /* ── typography ── */
+  --font-display: 'Orbitron', sans-serif;
+  --font-mono:    'Share Tech Mono', monospace;
+
+  /* ── spacing ── */
+  --header-h: 52px;
+}
+
+/* ── light theme override ── */
+body.light {
+  --bg:       #edf2f8;
+  --panel:    #ffffff;
+  --border:   #c0d4ea;
+  --text:     #1a2a3a;
+  --text-dim: #6a8aaa;
+  --accent:   #0055bb;
+  --accent2:  #007733;
+  --accent3:  #cc3300;
+  --glow:     rgba(0, 85, 187, 0.2);
+  --glow2:    rgba(0, 119, 51, 0.2);
+}

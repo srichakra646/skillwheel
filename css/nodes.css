@@ -1,0 +1,88 @@
+/* ═══════════════════════════════════════════════════
+   nodes.css
+   All SVG visual styles: orbit rings, link lines,
+   root node, L1 pill, L2 box, leaf dot.
+   No layout or page chrome here — that's layout.css.
+═══════════════════════════════════════════════════ */
+
+/* ── decorative orbit rings ── */
+.orbit-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-dasharray: 3 9;
+  stroke-width: 0.7;
+  opacity: 0.1;
+}
+.orbit-ring-solid {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 0.5;
+  opacity: 0.06;
+}
+
+/* ── link lines ── */
+.link       { fill: none; }
+.lk-l1      { stroke: var(--accent);   stroke-width: 1.4; opacity: 0.3;  }
+.lk-l2      { stroke: var(--text-dim); stroke-width: 1;   opacity: 0.35; }
+.lk-leaf    { stroke: var(--accent2);  stroke-width: 0.8; opacity: 0.2;  }
+
+/* ── root node ── */
+.root-inner {
+  fill: var(--panel);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.root-label {
+  font-family: var(--font-display);
+  font-weight: 900; font-size: 10px; letter-spacing: 1px;
+  fill: var(--accent);
+  text-anchor: middle; dominant-baseline: central;
+  pointer-events: none;
+}
+
+/* ── level-1 pill ── */
+.pill-bg {
+  fill: var(--panel);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.pill-bg.closed   { fill: #09141e; }
+.pill-dot         { fill: var(--accent2); }
+.pill-dot.closed  { fill: var(--accent); }
+.pill-label {
+  font-family: var(--font-display);
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.3px;
+  fill: var(--accent);
+  text-anchor: middle; dominant-baseline: central;
+  pointer-events: none;
+}
+.node:hover .pill-bg { filter: drop-shadow(0 0 7px var(--accent)); }
+
+/* ── level-2 box ── */
+.box-bg {
+  fill: var(--panel);
+  stroke: var(--text-dim);
+  stroke-width: 0.8;
+}
+.box-label {
+  font-size: 8px;
+  fill: var(--text);
+  text-anchor: middle; dominant-baseline: central;
+  pointer-events: none;
+}
+.node:hover .box-bg { stroke: var(--accent); }
+
+/* ── leaf dot ── */
+.leaf-dot {
+  fill: var(--bg);
+  stroke: var(--accent2);
+  stroke-width: 1.2;
+}
+.leaf-label {
+  font-size: 7.5px;
+  pointer-events: none;
+}
+.node:hover .leaf-dot { filter: drop-shadow(0 0 4px var(--accent2)); }
+
+/* ── interactive cursor ── */
+.node { cursor: pointer; }
