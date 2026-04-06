@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OSINT Framework</title>
+
+  <!-- ── Google Fonts ── -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- ── Stylesheets (order matters: variables first) ── -->
+  <link rel="stylesheet" href="css/variables.css"/>
+  <link rel="stylesheet" href="css/layout.css"/>
+  <link rel="stylesheet" href="css/nodes.css"/>
+  <link rel="stylesheet" href="css/animations.css"/>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════
+       Loading screen
+  ══════════════════════════════════════════════ -->
+  <div id="loading">
+    <div class="ld-title">OSINT FRAMEWORK</div>
+    <div class="ld-bar"><div class="ld-fill"></div></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       Header
+  ══════════════════════════════════════════════ -->
+  <header>
+    <div class="logo">OSINT<span>Framework</span></div>
+    <div class="sep"></div>
+
+    <div class="legend">
+      <div class="leg"><span class="badge bT">T</span> Local Tool</div>
+      <div class="leg"><span class="badge bD">D</span> Google Dork</div>
+      <div class="leg"><span class="badge bR">R</span> Registration</div>
+      <div class="leg"><span class="badge bM">M</span> Manual URL</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" onclick="expandAll()">⊞ Expand All</button>
+      <button class="btn" onclick="collapseAll()">⊟ Collapse</button>
+      <button class="btn" id="themeBtn" onclick="toggleTheme()">☀ Light</button>
+      <a class="btn" href="https://github.com/lockfale/osint-framework" target="_blank">⎋ GitHub</a>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════
+       SVG canvas
+  ══════════════════════════════════════════════ -->
+  <div id="canvas">
+    <svg id="svg">
+      <g id="root-g"></g>
+    </svg>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       Zoom controls
+  ══════════════════════════════════════════════ -->
+  <div id="zoom-ctrl">
+    <button class="zb" onclick="doZoom(1.3)"  title="Zoom in">+</button>
+    <button class="zb" onclick="doZoom(0.77)" title="Zoom out">−</button>
+    <button class="zb" onclick="resetView()"  title="Reset view">⌖</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       Help panel
+  ══════════════════════════════════════════════ -->
+  <div id="help">
+    <strong>Click</strong> rings to expand / collapse<br>
+    <strong>Click</strong> leaf nodes to open tool<br>
+    <strong>Drag</strong> to pan · <strong>Scroll</strong> to zoom
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       Tooltip (positioned by interaction.js)
+  ══════════════════════════════════════════════ -->
+  <div id="tip">
+    <div id="tip-name"></div>
+    <div id="tip-url"></div>
+    <div id="tip-tag"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       Scripts — load order is critical:
+         d3 (external CDN)
+         data       — raw tree data
+         constants  — shared numeric/map constants
+         layout     — computeLayout(), nodeXY()
+         draw       — redraw(), drawNode(), render*()
+         animate    — startFloatLoop(), stopFloatLoop()
+         interaction — onClick(), zoom, tooltip, theme
+         main       — app bootstrap, event listeners
+  ══════════════════════════════════════════════ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/constants.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/draw.js"></script>
+  <script src="js/animate.js"></script>
+  <script src="js/interaction.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>
