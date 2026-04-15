@@ -1,0 +1,79 @@
+l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,url,type
+Username,Search,Sherlock,,,,,,,, https://github.com/sherlock-project/sherlock,T
+Username,Search,WhatsMyName,,,,,,,,https://whatsmyname.app,
+Username,Search,Namechk,,,,,,,,https://namechk.com,
+Username,Search,KnowEm,,,,,,,,https://knowem.com,
+Username,Search,CheckUsernames,,,,,,,,https://checkusernames.com,
+Username,Reputation,SocialCatfish,,,,,,,,https://socialcatfish.com,R
+Username,Reputation,BeenVerified,,,,,,,,https://www.beenverified.com,R
+Username,Reputation,Spokeo,,,,,,,,https://spokeo.com,R
+Email,Verification,Hunter.io,,,,,,,,https://hunter.io,R
+Email,Verification,EmailRep,,,,,,,,https://emailrep.io,
+Email,Verification,MXToolbox,,,,,,,,https://mxtoolbox.com,
+Email,Breach Data,HaveIBeenPwned,,,,,,,,https://haveibeenpwned.com,
+Email,Breach Data,DeHashed,,,,,,,,https://dehashed.com,R
+Email,Breach Data,Snusbase,,,,,,,,https://snusbase.com,R
+Domain / IP,Whois / DNS,Who.is,,,,,,,,https://who.is,
+Domain / IP,Whois / DNS,DNSdumpster,,,,,,,,https://dnsdumpster.com,
+Domain / IP,Whois / DNS,ViewDNS,,,,,,,,https://viewdns.info,
+Domain / IP,Whois / DNS,crt.sh,,,,,,,,https://crt.sh,
+Domain / IP,Scanning,Shodan,,,,,,,,https://shodan.io,R
+Domain / IP,Scanning,Censys,,,,,,,,https://censys.io,R
+Domain / IP,Scanning,Nmap,,,,,,,,https://nmap.org,T
+Domain / IP,IP Geo,IPinfo,,,,,,,,https://ipinfo.io,
+Domain / IP,IP Geo,IP-API,,,,,,,,https://ip-api.com,
+Social Media,Twitter/X,Adv. Search,,,,,,,,https://twitter.com/search-advanced,M
+Social Media,Twitter/X,Twint,,,,,,,,https://github.com/twintproject/twint,T
+Social Media,LinkedIn,LinkedIn Search,,,,,,,,https://linkedin.com/search/results/all/,
+Social Media,LinkedIn,LinkedInt,,,,,,,,https://github.com/mdsecresearch/LinkedInt,T
+Social Media,Facebook,Who Posted What,,,,,,,,https://whopostedwhat.com,
+Social Media,Facebook,Lookup-ID,,,,,,,,https://lookup-id.com,
+Social Media,Instagram,Osintgram,,,,,,,,https://github.com/Datalux/Osintgram,T
+Social Media,Reddit,Pushshift,,,,,,,,https://pushshift.io,
+Social Media,Reddit,RedditSearch,,,,,,,,https://www.redditsearch.io,
+Search,Google Dorks,Exploit-DB GHDB,,,,,,,,https://www.exploit-db.com/google-hacking-database,D
+Search,Google Dorks,DorkSearch,,,,,,,,https://dorksearch.com,D
+Search,Dark Web,Ahmia,,,,,,,,https://ahmia.fi,
+Search,Dark Web,DarkSearch,,,,,,,,https://darksearch.io,
+Search,Code,GitHub Search,,,,,,,,https://github.com/search,
+Search,Code,Grep.app,,,,,,,,https://grep.app,
+Search,Code,PublicWWW,,,,,,,,https://publicwww.com,
+People,General,Pipl,,,,,,,,https://pipl.com,R
+People,General,TruePeopleSearch,,,,,,,,https://www.truepeoplesearch.com,
+People,General,FastPeopleSearch,,,,,,,,https://www.fastpeoplesearch.com,
+People,Phone,Truecaller,,,,,,,,https://truecaller.com,R
+People,Phone,NumLookup,,,,,,,,https://www.numlookup.com,
+People,Phone,SpyDialer,,,,,,,,https://spydialer.com,
+People,Records,FamilyTreeNow,,,,,,,,https://www.familytreenow.com,
+People,Records,PACER,,,,,,,,https://pacer.uscourts.gov,R
+Images,Reverse Img,Google Images,,,,,,,,https://images.google.com,
+Images,Reverse Img,TinEye,,,,,,,,https://tineye.com,
+Images,Reverse Img,Yandex Images,,,,,,,,https://yandex.com/images,
+Images,Metadata,ExifTool,,,,,,,,https://exiftool.org,T
+Images,Metadata,FotoForensics,,,,,,,,https://fotoforensics.com,
+Images,Metadata,Pic2Map,,,,,,,,https://www.pic2map.com,
+Geolocation,Maps,Google Earth,,,,,,,,https://earth.google.com,
+Geolocation,Maps,OpenStreetMap,,,,,,,,https://openstreetmap.org,
+Geolocation,Maps,Bing Maps,,,,,,,,https://www.bing.com/maps,
+Geolocation,Satellite,Sentinel Hub,,,,,,,,https://www.sentinel-hub.com,
+Geolocation,Satellite,Zoom Earth,,,,,,,,https://zoom.earth,
+Geolocation,Street,Mapillary,,,,,,,,https://www.mapillary.com,
+Geolocation,Street,GeoGuessr,,,,,,,,https://geoguessr.com,
+Networks,IoT Search,Shodan,,,,,,,,https://shodan.io,R
+Networks,IoT Search,ZoomEye,,,,,,,,https://www.zoomeye.org,
+Networks,IoT Search,FOFA,,,,,,,,https://fofa.info,
+Networks,Wireless,WiGLE,,,,,,,,https://wigle.net,R
+Networks,Scanning,Masscan,,,,,,,,https://github.com/robertdavidgraham/masscan,T
+Networks,Scanning,Nmap,,,,,,,,https://nmap.org,T
+Documents,Metadata,FOCA,,,,,,,,https://github.com/ElevenPaths/FOCA,T
+Documents,Metadata,Metagoofil,,,,,,,,https://github.com/laramies/metagoofil,T
+Documents,Pastes,Pastebin,,,,,,,,https://pastebin.com,
+Documents,Pastes,PasteLert,,,,,,,,https://andrewmohawk.com/pasteLert,
+Documents,Archives,Archive.org,,,,,,,,https://archive.org/web,
+Documents,Archives,CachedView,,,,,,,,https://cachedview.nl,
+Documents,Archives,TimeTravel,,,,,,,,http://timetravel.mementoweb.org,
+Dark Web,Search,Ahmia,,,,,,,,https://ahmia.fi,
+Dark Web,Search,DarkSearch,,,,,,,,https://darksearch.io,
+Dark Web,Search,IntelX,,,,,,,,https://intelx.io,
+Dark Web,Monitor,Dark.Fail,,,,,,,,https://dark.fail,
+Dark Web,Monitor,OnionSearch,,,,,,,,https://github.com/megadose/OnionSearch,T
