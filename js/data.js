@@ -1,185 +1,156 @@
 /* ═══════════════════════════════════════════════════
    data.js
-   Single source of truth for the OSINT tree data.
-   Each node: { name, children? }
-   Each leaf: { name, type?, url }
-   type: "T" local tool | "D" dork | "R" registration | "M" manual URL
+   Fetches osint-data.csv and parses it into the nested
+   { name, children[] } tree that d3.hierarchy() expects.
+
+   CSV COLUMN STRUCTURE (12 columns total)
+   ────────────────────────────────────────
+   l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, url, type
+
+   RULES
+   ─────
+   • Fill columns left to right, leave the rest empty.
+   • The last non-empty level column is the leaf node.
+   • Levels must be contiguous — no skipping a column.
+   • url  — required on leaf rows, empty on branch rows.
+   • type — optional: T | D | R | M
+
+   EXAMPLE ROWS
+   ─────────────
+   Username, Search, Sherlock, , , , , , , , https://github.com/..., T
+   Username, Search, WhatsMyName, , , , , , , , https://whatsmyname.app,
+   Domain/IP, Whois, DNS, Active, Nmap, TCP Scan, , , , , https://nmap.org, T
+
+   DEDUPLICATION
+   ─────────────
+   A Map is maintained at every level. If a node name
+   already exists at that position in the tree it is
+   reused — never duplicated. Only unique names create
+   new nodes.
 ═══════════════════════════════════════════════════ */
 
-const DATA = {
-  name: "OSINT\nFramework",
-  children: [
-    { name: "Username", children: [
-      { name: "Search", children: [
-        { name: "Sherlock",       type: "T", url: "https://github.com/sherlock-project/sherlock" },
-        { name: "WhatsMyName",               url: "https://whatsmyname.app" },
-        { name: "Namechk",                   url: "https://namechk.com" },
-        { name: "KnowEm",                    url: "https://knowem.com" },
-        { name: "CheckUsernames",            url: "https://checkusernames.com" }
-      ]},
-      { name: "Reputation", children: [
-        { name: "SocialCatfish",  type: "R", url: "https://socialcatfish.com" },
-        { name: "BeenVerified",   type: "R", url: "https://www.beenverified.com" },
-        { name: "Spokeo",         type: "R", url: "https://spokeo.com" }
-      ]}
-    ]},
+const CSV_PATH      = 'osint-data.csv';
+const LEVEL_COLUMNS = 10;   // l1 … l10  (columns 0–9)
+const COL_URL       = 10;   // index of url  column
+const COL_TYPE      = 11;   // index of type column
 
-    { name: "Email", children: [
-      { name: "Verification", children: [
-        { name: "Hunter.io",      type: "R", url: "https://hunter.io" },
-        { name: "EmailRep",                  url: "https://emailrep.io" },
-        { name: "MXToolbox",                 url: "https://mxtoolbox.com" }
-      ]},
-      { name: "Breach Data", children: [
-        { name: "HaveIBeenPwned",            url: "https://haveibeenpwned.com" },
-        { name: "DeHashed",       type: "R", url: "https://dehashed.com" },
-        { name: "Snusbase",       type: "R", url: "https://snusbase.com" }
-      ]}
-    ]},
+// ─────────────────────────────────────────────────────────────────
+// parseCSV — minimal, dependency-free CSV parser.
+// Handles quoted fields and trims whitespace.
+// Returns an array of string arrays (rows × columns).
+// ─────────────────────────────────────────────────────────────────
+function parseCSV(text) {
+  const rows  = [];
+  const lines = text.split(/\r?\n/);
 
-    { name: "Domain / IP", children: [
-      { name: "Whois / DNS", children: [
-        { name: "Who.is",                    url: "https://who.is" },
-        { name: "DNSdumpster",               url: "https://dnsdumpster.com" },
-        { name: "ViewDNS",                   url: "https://viewdns.info" },
-        { name: "crt.sh",                    url: "https://crt.sh" }
-      ]},
-      { name: "Scanning", children: [
-        { name: "Shodan",         type: "R", url: "https://shodan.io" },
-        { name: "Censys",         type: "R", url: "https://censys.io" },
-        { name: "Nmap",           type: "T", url: "https://nmap.org" }
-      ]},
-      { name: "IP Geo", children: [
-        { name: "IPinfo",                    url: "https://ipinfo.io" },
-        { name: "IP-API",                    url: "https://ip-api.com" }
-      ]}
-    ]},
+  for (const line of lines) {
+    if (!line.trim()) continue;
 
-    { name: "Social Media", children: [
-      { name: "Twitter/X", children: [
-        { name: "Adv. Search",    type: "M", url: "https://twitter.com/search-advanced" },
-        { name: "Twint",          type: "T", url: "https://github.com/twintproject/twint" }
-      ]},
-      { name: "LinkedIn", children: [
-        { name: "LinkedIn Search",           url: "https://linkedin.com/search/results/all/" },
-        { name: "LinkedInt",      type: "T", url: "https://github.com/mdsecresearch/LinkedInt" }
-      ]},
-      { name: "Facebook", children: [
-        { name: "Who Posted What",           url: "https://whopostedwhat.com" },
-        { name: "Lookup-ID",                 url: "https://lookup-id.com" }
-      ]},
-      { name: "Instagram", children: [
-        { name: "Osintgram",      type: "T", url: "https://github.com/Datalux/Osintgram" }
-      ]},
-      { name: "Reddit", children: [
-        { name: "Pushshift",                 url: "https://pushshift.io" },
-        { name: "RedditSearch",              url: "https://www.redditsearch.io" }
-      ]}
-    ]},
+    const cols    = [];
+    let   cur     = '';
+    let   inQuote = false;
 
-    { name: "Search", children: [
-      { name: "Google Dorks", children: [
-        { name: "Exploit-DB GHDB", type: "D", url: "https://www.exploit-db.com/google-hacking-database" },
-        { name: "DorkSearch",      type: "D", url: "https://dorksearch.com" }
-      ]},
-      { name: "Dark Web", children: [
-        { name: "Ahmia",                     url: "https://ahmia.fi" },
-        { name: "DarkSearch",                url: "https://darksearch.io" }
-      ]},
-      { name: "Code", children: [
-        { name: "GitHub Search",             url: "https://github.com/search" },
-        { name: "Grep.app",                  url: "https://grep.app" },
-        { name: "PublicWWW",                 url: "https://publicwww.com" }
-      ]}
-    ]},
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQuote && line[i + 1] === '"') { cur += '"'; i++; }
+        else inQuote = !inQuote;
+      } else if (ch === ',' && !inQuote) {
+        cols.push(cur.trim());
+        cur = '';
+      } else {
+        cur += ch;
+      }
+    }
+    cols.push(cur.trim());
+    rows.push(cols);
+  }
 
-    { name: "People", children: [
-      { name: "General", children: [
-        { name: "Pipl",           type: "R", url: "https://pipl.com" },
-        { name: "TruePeopleSearch",          url: "https://www.truepeoplesearch.com" },
-        { name: "FastPeopleSearch",          url: "https://www.fastpeoplesearch.com" }
-      ]},
-      { name: "Phone", children: [
-        { name: "Truecaller",     type: "R", url: "https://truecaller.com" },
-        { name: "NumLookup",                 url: "https://www.numlookup.com" },
-        { name: "SpyDialer",                 url: "https://spydialer.com" }
-      ]},
-      { name: "Records", children: [
-        { name: "FamilyTreeNow",             url: "https://www.familytreenow.com" },
-        { name: "PACER",          type: "R", url: "https://pacer.uscourts.gov" }
-      ]}
-    ]},
+  return rows;
+}
 
-    { name: "Images", children: [
-      { name: "Reverse Img", children: [
-        { name: "Google Images",             url: "https://images.google.com" },
-        { name: "TinEye",                    url: "https://tineye.com" },
-        { name: "Yandex Images",             url: "https://yandex.com/images" }
-      ]},
-      { name: "Metadata", children: [
-        { name: "ExifTool",       type: "T", url: "https://exiftool.org" },
-        { name: "FotoForensics",             url: "https://fotoforensics.com" },
-        { name: "Pic2Map",                   url: "https://www.pic2map.com" }
-      ]}
-    ]},
+// ─────────────────────────────────────────────────────────────────
+// buildTreeFromRows — converts parsed CSV rows into the nested
+// node object consumed by d3.hierarchy().
+//
+// Algorithm:
+//   • One Map per level tracks name → node so duplicates are
+//     caught in O(1).
+//   • Walking left-to-right each row, we find or create each
+//     branch node, then attach the leaf at the deepest column.
+//   • Maps for levels deeper than the current leaf are cleared
+//     so stale references from a previous branch don't leak.
+// ─────────────────────────────────────────────────────────────────
+function buildTreeFromRows(rows) {
+  const root = { name: 'OSINT\nFramework', children: [] };
 
-    { name: "Geolocation", children: [
-      { name: "Maps", children: [
-        { name: "Google Earth",              url: "https://earth.google.com" },
-        { name: "OpenStreetMap",             url: "https://openstreetmap.org" },
-        { name: "Bing Maps",                 url: "https://www.bing.com/maps" }
-      ]},
-      { name: "Satellite", children: [
-        { name: "Sentinel Hub",              url: "https://www.sentinel-hub.com" },
-        { name: "Zoom Earth",                url: "https://zoom.earth" }
-      ]},
-      { name: "Street", children: [
-        { name: "Mapillary",                 url: "https://www.mapillary.com" },
-        { name: "GeoGuessr",                 url: "https://geoguessr.com" }
-      ]}
-    ]},
+  // One Map per depth level: name → node reference
+  const maps = Array.from({ length: LEVEL_COLUMNS }, () => new Map());
 
-    { name: "Networks", children: [
-      { name: "IoT Search", children: [
-        { name: "Shodan",         type: "R", url: "https://shodan.io" },
-        { name: "ZoomEye",                   url: "https://www.zoomeye.org" },
-        { name: "FOFA",                      url: "https://fofa.info" }
-      ]},
-      { name: "Wireless", children: [
-        { name: "WiGLE",          type: "R", url: "https://wigle.net" }
-      ]},
-      { name: "Scanning", children: [
-        { name: "Masscan",        type: "T", url: "https://github.com/robertdavidgraham/masscan" },
-        { name: "Nmap",           type: "T", url: "https://nmap.org" }
-      ]}
-    ]},
+  for (const row of rows) {
+    const url  = (row[COL_URL]  || '').trim();
+    const type = (row[COL_TYPE] || '').trim() || undefined;
 
-    { name: "Documents", children: [
-      { name: "Metadata", children: [
-        { name: "FOCA",           type: "T", url: "https://github.com/ElevenPaths/FOCA" },
-        { name: "Metagoofil",     type: "T", url: "https://github.com/laramies/metagoofil" }
-      ]},
-      { name: "Pastes", children: [
-        { name: "Pastebin",                  url: "https://pastebin.com" },
-        { name: "PasteLert",                 url: "https://andrewmohawk.com/pasteLert" }
-      ]},
-      { name: "Archives", children: [
-        { name: "Archive.org",               url: "https://archive.org/web" },
-        { name: "CachedView",                url: "https://cachedview.nl" },
-        { name: "TimeTravel",                url: "http://timetravel.mementoweb.org" }
-      ]}
-    ]},
+    // Find the deepest non-empty level column — that is the leaf
+    let leafDepth = -1;
+    for (let i = LEVEL_COLUMNS - 1; i >= 0; i--) {
+      if (row[i] && row[i].trim()) { leafDepth = i; break; }
+    }
+    if (leafDepth < 0) continue; // nothing useful in this row
 
-    { name: "Dark Web", children: [
-      { name: "Search", children: [
-        { name: "Ahmia",                     url: "https://ahmia.fi" },
-        { name: "DarkSearch",                url: "https://darksearch.io" },
-        { name: "IntelX",                    url: "https://intelx.io" }
-      ]},
-      { name: "Monitor", children: [
-        { name: "Dark.Fail",                 url: "https://dark.fail" },
-        { name: "OnionSearch",    type: "T", url: "https://github.com/megadose/OnionSearch" }
-      ]}
-    ]}
-  ]
-};
+    // Walk from depth 0 to leafDepth
+    for (let depth = 0; depth <= leafDepth; depth++) {
+      const name = (row[depth] || '').trim();
+      if (!name) break; // levels must be contiguous
+
+      const isLeaf = depth === leafDepth;
+
+      // Resolve parent's children array
+      const parentChildren = depth === 0
+        ? root.children
+        : (() => {
+            const parentName = (row[depth - 1] || '').trim();
+            const parent     = maps[depth - 1].get(parentName);
+            if (!parent) return null;
+            if (!parent.children) parent.children = [];
+            return parent.children;
+          })();
+
+      if (!parentChildren) break; // safety
+
+      // Create node only if it doesn't already exist at this depth
+      if (!maps[depth].has(name)) {
+        const node = isLeaf && url
+          ? { name, url, type }       // leaf
+          : { name, children: [] };   // branch
+
+        parentChildren.push(node);
+        maps[depth].set(name, node);
+      }
+
+      if (isLeaf) break;
+    }
+
+    // Clear Maps for levels deeper than this leaf so the next
+    // shallower row doesn't accidentally reuse stale parents
+    for (let i = leafDepth + 1; i < LEVEL_COLUMNS; i++) {
+      maps[i].clear();
+    }
+  }
+
+  return root;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// loadData — public API called by main.js.
+// Fetches the CSV, strips the header row, returns the tree.
+// ─────────────────────────────────────────────────────────────────
+async function loadData() {
+  const response = await fetch(CSV_PATH);
+  if (!response.ok) {
+    throw new Error(`Failed to load ${CSV_PATH} — HTTP ${response.status}`);
+  }
+  const text = await response.text();
+  const rows = parseCSV(text).slice(1); // drop header row
+  return buildTreeFromRows(rows);
+}
