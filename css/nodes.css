@@ -21,10 +21,31 @@
 }
 
 /* ── link lines ── */
-.link       { fill: none; }
-.lk-l1      { stroke: var(--accent);   stroke-width: 1.4; opacity: 0.3;  }
-.lk-l2      { stroke: var(--text-dim); stroke-width: 1;   opacity: 0.35; }
-.lk-leaf    { stroke: var(--accent2);  stroke-width: 0.8; opacity: 0.2;  }
+/* Base rule — all links share these */
+.link { fill: none; }
+
+/* depth 1 — root to L1 category */
+.lk-d1 { stroke: var(--accent);   stroke-width: 1.4; opacity: 0.30; }
+
+/* depth 2 — L1 to L2 group */
+.lk-d2 { stroke: var(--text-dim); stroke-width: 1.1; opacity: 0.35; }
+
+/* depth 3 — L2 to L3 */
+.lk-d3 { stroke: var(--text-dim); stroke-width: 0.9; opacity: 0.30; }
+
+/* depth 4–6 — mid levels */
+.lk-d4 { stroke: var(--accent2);  stroke-width: 0.8; opacity: 0.22; }
+.lk-d5 { stroke: var(--accent2);  stroke-width: 0.7; opacity: 0.18; }
+.lk-d6 { stroke: var(--accent2);  stroke-width: 0.6; opacity: 0.15; }
+
+/* depth 7–10 — deep levels, very faint */
+.lk-d7  { stroke: var(--accent2); stroke-width: 0.5; opacity: 0.12; }
+.lk-d8  { stroke: var(--accent2); stroke-width: 0.5; opacity: 0.10; }
+.lk-d9  { stroke: var(--accent2); stroke-width: 0.4; opacity: 0.08; }
+.lk-d10 { stroke: var(--accent2); stroke-width: 0.4; opacity: 0.07; }
+
+/* leaf fallback — applied when target has no children */
+.lk-leaf { stroke: var(--accent2); stroke-width: 0.8; opacity: 0.20; }
 
 /* ── root node ── */
 .root-inner {
