@@ -37,11 +37,22 @@ function dims() {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// buildTree() — construct hierarchy from DATA, seed float state,
-//               then hand off to draw.js
+// buildTree() — fetch + parse CSV, seed float state, hand to draw
 // ─────────────────────────────────────────────────────────────────
-function buildTree() {
-  hierRoot = d3.hierarchy(DATA);
+async function buildTree() {
+  // loadData() lives in data.js — fetches + parses osint-data.csv
+  let treeData;
+  try {
+    treeData = await loadData();
+  } catch (err) {
+    console.error('Could not load CSV data:', err);
+    document.getElementById('loading').innerHTML =
+      `<div class="ld-title" style="color:var(--accent3)">DATA ERROR</div>
+       <div style="font-size:11px;color:var(--text-dim);margin-top:8px">${err.message}</div>`;
+    return;
+  }
+
+  hierRoot = d3.hierarchy(treeData);
 
   hierRoot.descendants().forEach(d => {
     // Stable numeric ID — used as DOM element id by draw.js
