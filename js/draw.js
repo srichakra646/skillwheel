@@ -54,9 +54,11 @@ function redraw() {
     const mx = (sp.x + tp.x) * blend;
     const my = (sp.y + tp.y) * blend;
 
-    const cls = t.depth === 1
-      ? 'link lk-l1'
-      : (!t.children && !t._children ? 'link lk-leaf' : 'link lk-l2');
+    // Link class: leaf links get .lk-leaf, others get .lk-d{depth}
+    const isLeafTarget = !t.children && !t._children;
+    const cls = isLeafTarget
+      ? 'link lk-leaf'
+      : `link lk-d${Math.min(t.depth, 10)}`;
 
     linkG.append('path')
       .attr('class', cls)
@@ -82,10 +84,17 @@ function redraw() {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// drawNode — creates a <g> wrapper and delegates to renderer
+// drawNode — creates a <g> wrapper and delegates to the right
+// renderer based on depth:
+//   depth 0          → renderRoot
+//   depth 1          → renderL1  (category pill)
+//   depth 2–3        → renderL2  (group box, shrinks at depth 3)
+//   depth 4+ leaf    → renderLeaf
+//   depth 4+ branch  → renderDeepBranch (small labelled circle)
 // ─────────────────────────────────────────────────────────────────
 function drawNode(container, d) {
   const { x, y } = nodeXY(d);
+  const isLeaf    = !d.children && !d._children;
 
   const g = container.append('g')
     .attr('class',     'node')
@@ -97,10 +106,11 @@ function drawNode(container, d) {
     .on('mousemove', ev => moveTip(ev))
     .on('mouseout',  () => hideTip());
 
-  if      (d.depth === 0) renderRoot(g);
-  else if (d.depth === 1) renderL1(g, d);
-  else if (d.depth === 2) renderL2(g, d);
-  else                    renderLeaf(g, d);
+  if      (d.depth === 0)             renderRoot(g);
+  else if (d.depth === 1)             renderL1(g, d);
+  else if (d.depth <= 3)              renderL2(g, d);
+  else if (isLeaf)                    renderLeaf(g, d);
+  else                                renderDeepBranch(g, d);
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -167,22 +177,68 @@ function renderL1(g, d) {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// renderL2 — sub-group box, width fitted to label
+// renderL2 — sub-group box, width fitted to label.
+// At depth 3 the box shrinks slightly for visual hierarchy.
 // ─────────────────────────────────────────────────────────────────
 function renderL2(g, d) {
-  const name = d.data.name;
-  const w    = Math.max(54, name.length * 5.2 + 16);
+  const name   = d.data.name;
+  // Box gets smaller the deeper it is
+  const scale  = d.depth === 2 ? 1 : 0.82;
+  const h      = L2H * scale;
+  const w      = Math.max(46, name.length * 5.2 * scale + 14);
 
   g.append('rect')
     .attr('class',  'box-bg')
     .attr('x',      -w / 2)
-    .attr('y',      -L2H / 2)
+    .attr('y',      -h / 2)
     .attr('width',   w)
-    .attr('height',  L2H)
+    .attr('height',  h)
     .attr('rx',      4)
-    .attr('ry',      4);
+    .attr('ry',      4)
+    .style('opacity', d.depth === 2 ? 1 : 0.75);
 
-  g.append('text').attr('class', 'box-label').text(name);
+  g.append('text')
+    .attr('class',    'box-label')
+    .style('font-size', `${8 * scale}px`)
+    .text(name);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// renderDeepBranch — for branch nodes at depth 4 and beyond.
+// Rendered as a small labelled circle that can still be clicked
+// to expand. Shrinks progressively with depth.
+// ─────────────────────────────────────────────────────────────────
+function renderDeepBranch(g, d) {
+  // Radius shrinks from 5px at depth 4 down to 3px at depth 10
+  const r      = Math.max(3, 6 - (d.depth - 3) * 0.4);
+  const open   = !!d.children;
+  const col    = open ? 'var(--accent2)' : 'var(--accent)';
+
+  g.append('circle')
+    .attr('r',            r)
+    .attr('fill',         'var(--panel)')
+    .attr('stroke',       col)
+    .attr('stroke-width', 1.2);
+
+  // Tiny centre dot to indicate collapsed state
+  if (!open) {
+    g.append('circle').attr('r', r * 0.35).attr('fill', col);
+  }
+
+  // Label — same flip logic as leaf
+  const angleDeg = ((d.x * 180 / Math.PI) + 360) % 360;
+  const leftSide = angleDeg > 90 && angleDeg < 270;
+  const fontSize = Math.max(6.5, 8 - (d.depth - 3) * 0.3);
+
+  g.append('text')
+    .attr('x',                 leftSide ? -(r + 5) : (r + 5))
+    .attr('y',                 0)
+    .attr('text-anchor',       leftSide ? 'end' : 'start')
+    .attr('dominant-baseline', 'central')
+    .attr('fill',              col)
+    .style('font-size',        `${fontSize}px`)
+    .style('pointer-events',   'none')
+    .text(d.data.name);
 }
 
 // ─────────────────────────────────────────────────────────────────
